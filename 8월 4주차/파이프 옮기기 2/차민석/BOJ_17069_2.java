@@ -24,28 +24,68 @@ public class BOJ_17069_2 {
 					int[] temp = { 0, 0, 0 };
 					map[i][j] = temp;					
 				} else { // num == 1 ( 벽 )
-					map[i][j] = null;
+					int[] temp = { -1, -1, -1 };
+					map[i][j] = temp;		
 				}
 			}
 		}
 		
+		// 가로와 대각을 1로 놔준다.
 		map[0][1][0] = 1;
+		map[0][1][2] = 1; 
+		
 		for (int i = 0; i < N; i++) {
 			for (int j = 0; j < N; j++) {
+				if (i == 0 && j == 0) {
+					continue;
+				}
+				if (map[i][j][0] == -1) {
+					continue;
+				}
 				
-				for (int d = 0; d < 3; d++) {
-					int ni = i + di[d];
-					int nj = j + dj[d];
-					if (ni >= 0 && ni < N && nj >= 0 && nj < N) {
-						// 가로는 가로와 대각의 합이다
-						
-						map[i][j][0] += map[ni][nj][d];
+				// 1. (i, j-1) 가로 파이프
+				int left = 0;
+				{
+					int ni = i;
+					int nj = j - 1;
+					if (ni >= 0 && nj >= 0 && map[ni][nj][0] != -1) {
+						left = map[ni][nj][0];
+					}
+				}
+				// 2. (i-1, j) 세로 파이프
+				int up = 0;
+				{
+					int ni = i - 1;
+					int nj = j;
+					if (ni >= 0 && nj >= 0 && map[ni][nj][1] != -1) {
+						up = map[ni][nj][1];
+					}
+				}
+				// 3. (i-1, j-1) 대각 파이프
+				int leftUp = 0;
+				{
+					int ni = i - 1;
+					int nj = j - 1;
+					if (ni >= 0 && nj >= 0 && map[ni][nj][2] != -1 && left != 0 && up != 0) {
+						leftUp = map[ni][nj][2];
 					}
 				}
 				
-				// 세로는 
+				// 현재 의 가로는 가로 + 대각
+				map[i][j][0] = left + leftUp;
+				// 세로는 세로 + 대각
+				map[i][j][1] = up + leftUp;
+				// 대각은 가로 + 세로 + 대각
+				map[i][j][2] = left + up + leftUp;
+				
 			}
 		}
+		
+		int ans = 0;
+		for (int i = 0; i < 3; i++) {
+			ans += map[N-1][N-1][i];
+		}
+		System.out.println(ans);
 	}
 
 }
