@@ -3,7 +3,6 @@ package day0903;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Stack;
@@ -35,52 +34,19 @@ public class BOJ_11559 {
 			map[i] = br.readLine().toCharArray();
 		}
 		removes = new Stack<>();
-		
-		// 왼쪽 맨 밑에서 부터 오른쪽 위로 하나씩 탐색하면서 4개 이상 되는지 찾아보기
-		search();
-		
+
+		playGame();
+
 		System.out.println(ans);
 
 	}
 
-	static void search() {
+	static void playGame() {
 
 		while (true) {
-			// 실행시 마다 방문배열 새로 만들어준다.
-			visit = new boolean[N][M];
-			for (int i = N - 1; i >= 0; i--) {
-				for (int j = 0; j < M; j++) {
-					// 아직 방문하지 않은 곳일 때 그 점 기준 같은 색 BFS 탐색
-					if (!visit[i][j] && map[i][j] != '.') {
-						visit[i][j] = true;
-						Queue<Point> queue = new LinkedList<>();
-						queue.add(new Point(i, j));
-						int sameCnt = 0;
-						while (!queue.isEmpty()) {
-							Point now = queue.poll();
-							sameCnt++;
-							// 일단 삭제 목록에 넣어두기 , 4개 안되면 다시 뺄 예정
-							removes.push(now);
-							for (int d = 0; d < 4; d++) {
-								int ni = now.i + di[d];
-								int nj = now.j + dj[d];
-								if (ni >= 0 && ni < N && nj >= 0 && nj < M && !visit[ni][nj]
-										&& map[ni][nj] == map[i][j]) {
-									visit[ni][nj] = true;
-									queue.add(new Point(ni, nj));
-								}
-							}
-						}
-						// 4가 안되면 스택에 넣은 녀석들 다시 뱉어낸다.
-						if (sameCnt < 4) {
-							for (int k = 0; k < sameCnt; k++) {
-								removes.pop();
-							}
-						}
-					}
-				}
-			}
-			
+			// 왼쪽 맨 밑에서 부터 오른쪽 위로 하나씩 탐색하면서 4개 이상 되는지 찾아보기
+			bfs();
+
 			// 만약 removes 배열이 비어있다면 아무것도 터뜨릴 수 없으니 while문 종료
 			if (removes.isEmpty()) {
 				break;
@@ -88,6 +54,47 @@ public class BOJ_11559 {
 
 			// 배열전체 순회후 터뜨릴 녀석들 다 모은 녀석들을 터뜨리고 배열 재배치
 			remove();
+		}
+	}
+
+	static void bfs() {
+		// 실행시 마다 방문배열 새로 만들어준다.
+		visit = new boolean[N][M];
+		
+		for (int i = N - 1; i >= 0; i--) {
+			for (int j = 0; j < M; j++) {
+				// 아직 방문하지 않은 곳일 때 그 점 기준 같은 색 BFS 탐색
+				if (!visit[i][j] && map[i][j] != '.') {
+					
+					visit[i][j] = true;
+					Queue<Point> queue = new LinkedList<>();
+					queue.add(new Point(i, j));	
+					
+					int sameCnt = 0;
+					
+					while (!queue.isEmpty()) {
+						Point now = queue.poll();
+						sameCnt++;
+						// 일단 삭제 목록에 넣어두기 , 4개 안되면 다시 뺄 예정
+						removes.push(now);
+						
+						for (int d = 0; d < 4; d++) {
+							int ni = now.i + di[d];
+							int nj = now.j + dj[d];
+							if (ni >= 0 && ni < N && nj >= 0 && nj < M && !visit[ni][nj] && map[ni][nj] == map[i][j]) {
+								visit[ni][nj] = true;
+								queue.add(new Point(ni, nj));
+							}
+						}
+					}
+					// 4가 안되면 스택에 넣은 녀석들 다시 뱉어낸다.
+					if (sameCnt < 4) {
+						for (int k = 0; k < sameCnt; k++) {
+							removes.pop();
+						}
+					}
+				}
+			}
 		}
 	}
 
@@ -99,7 +106,7 @@ public class BOJ_11559 {
 		}
 		// 스택 다 비워지면 연쇄 1 추가
 		ans++;
-		
+
 		// 배열 바닥으로 내리기
 		relocation();
 	}
