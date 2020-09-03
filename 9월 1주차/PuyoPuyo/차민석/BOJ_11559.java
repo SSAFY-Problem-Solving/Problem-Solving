@@ -54,30 +54,33 @@ public class BOJ_11559 {
 
 			// 배열전체 순회후 터뜨릴 녀석들 다 모은 녀석들을 터뜨리고 배열 재배치
 			remove();
+
+			// 배열 바닥으로 내리기
+			relocation();
 		}
 	}
 
 	static void bfs() {
 		// 실행시 마다 방문배열 새로 만들어준다.
 		visit = new boolean[N][M];
-		
+
 		for (int i = N - 1; i >= 0; i--) {
 			for (int j = 0; j < M; j++) {
 				// 아직 방문하지 않은 곳일 때 그 점 기준 같은 색 BFS 탐색
 				if (!visit[i][j] && map[i][j] != '.') {
-					
+
 					visit[i][j] = true;
 					Queue<Point> queue = new LinkedList<>();
-					queue.add(new Point(i, j));	
-					
+					queue.add(new Point(i, j));
+
 					int sameCnt = 0;
-					
+
 					while (!queue.isEmpty()) {
 						Point now = queue.poll();
 						sameCnt++;
 						// 일단 삭제 목록에 넣어두기 , 4개 안되면 다시 뺄 예정
 						removes.push(now);
-						
+
 						for (int d = 0; d < 4; d++) {
 							int ni = now.i + di[d];
 							int nj = now.j + dj[d];
@@ -106,9 +109,6 @@ public class BOJ_11559 {
 		}
 		// 스택 다 비워지면 연쇄 1 추가
 		ans++;
-
-		// 배열 바닥으로 내리기
-		relocation();
 	}
 
 	static void relocation() {
